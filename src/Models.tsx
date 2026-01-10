@@ -1,4 +1,4 @@
-import {ChangeEvent, useEffect, useState, memo} from "react";
+import {ChangeEvent, useEffect, useState, memo, useContext} from "react";
 import InputLabel from '@mui/material/InputLabel';
 
 import FormControl from "@mui/material/FormControl";
@@ -8,10 +8,12 @@ import MenuItem from '@mui/material/MenuItem';
 import Select, {SelectChangeEvent} from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
-import {TrainingsContext} from "./context";
+import {LoadingContext, TrainingsContext} from "./context";
 
 const Models = (props) => {
-    const {onChangeModel, onTrainHanlder, onPredictHanlder, trainDisabled, reTrainDisabled, loading} = props;
+    const {onTrainingDone} = props;
+    const {setTrainings} = useContext(TrainingsContext);
+    const {setLoading} = useContext(LoadingContext);
 
     const initModel = {
         id: '',
@@ -39,18 +41,24 @@ const Models = (props) => {
         getModels()
     }, [])
 
-    console.log('MODELS RENDER')
+    const getTrainings = async (modelId: number) => {
+        const res = await fetch('http://localhost:3000/forecast/trainings?modelId=' + modelId)
+        const data = await res.json()
+        // console.log('trainings', trainings)
+        setTrainings(data)
+    }
 
-
-    const onSelectModelHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    const onSelectModelHandler = async (event: ChangeEvent<HTMLInputElement>) => {
         const modelId = event.target.value;
         console.log('onChangeModel: ', event.target);
         setSelectedModel({...models.get(modelId)});
-        onChangeModel(modelId)
+        // onChangeModel(modelId)
         // console.log('ttt', onChangeModel)
+        await getTrainings(Number(modelId));
     }
 
     const trainModel = async () => {
+        setLoading({status: true, text: 'Model training in progress...'})
         const res = await fetch('http://localhost:3000/forecast/model', {
             method: 'PUT',
             headers: {
@@ -59,12 +67,17 @@ const Models = (props) => {
             body: JSON.stringify({modelParams: selectedModel}),
         });
         const response = await res.json();
-        const {model} = response;
+        const {model, trainingLog} = response;
         await getModels()
         setSelectedModel(model)
+        setTrainings(trainingLog)
+        onTrainingDone()
+        setLoading({status: false, case: ''})
+
     }
 
     const reTrainModel = async () => {
+        setLoading({status: true, text: 'Model retraining in progress...'})
         const res = await fetch('http://localhost:3000/forecast/model', {
             method: 'POST',
             headers: {
@@ -72,10 +85,14 @@ const Models = (props) => {
             },
             body: JSON.stringify({id: selectedModel.id, modelParams: selectedModel}),
         });
-        const response = await res.json();
-        const {model} = response;
+        const data = await res.json();
+        const {model, trainingLog} = data;
         await getModels();
         setSelectedModel(model)
+        setTrainings(trainingLog)
+        onTrainingDone()
+        setLoading({status: false, text: ''})
+
     }
 
 
@@ -88,7 +105,30 @@ const Models = (props) => {
         setSelectedModel({...model, [key]: value})
     }
 
-    const resetModel = () => setSelectedModel(initModel)
+    const resetModel = () => {
+        setSelectedModel(initModel)
+        setTrainings([])
+    }
+
+    const predictHanlder = async () => {
+        const data = {
+            // TODO Need flow to select city and period
+            cityId: 1,
+            nextYearMonths: [
+                37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56
+            ],
+            // -------------------------------
+            modelId: selectedModel.id,
+        }
+        await fetch('http://localhost:3000/forecast/predict', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data),
+        });
+        onTrainingDone()
+    }
 
     return (
         <Box sx={{display: 'grid', gap: 2, gridTemplateColumns: 'repeat(3, 1fr)'}} style={{marginTop: 25}}>
@@ -117,7 +157,7 @@ const Models = (props) => {
                     onChangeValue(Number(event.target.value), 'epochs')}
                 id="outlined-required"
                 label="Epochs"
-                defaultValue="Hello World"
+                defaultValue="200"
                 size="small"
             />
             <TextField
@@ -128,7 +168,7 @@ const Models = (props) => {
                     onChangeValue(Number(event.target.value), 'batchSize')}
                 id="outlined-required"
                 label="BatchSize"
-                defaultValue="Hello World"
+                defaultValue="12"
                 size="small"
             />
             <TextField
@@ -164,13 +204,13 @@ const Models = (props) => {
                     selectedModel.id && <Button size={'small'} fullWidth variant="contained" color="success"
                                                 onClick={() => reTrainModel()}>{'Retrain'}</Button>
                 }
-                <Button size={'small'} fullWidth variant="contained">Predict</Button>
+                <Button size={'small'} fullWidth variant="contained" onClick={() => predictHanlder()}>Predict</Button>
                 <Button size={'small'} fullWidth variant="outlined" onClick={() => resetModel()}>Reset</Button>
             </Stack>
-            <Button variant="contained" color="success" onClick={() => {
-                console.log('selectedModel: ', selectedModel)
-                console.log('models:', models)
-            }}>Test</Button>
+            {/*<Button variant="contained" color="success" onClick={() => {*/}
+            {/*    console.log('selectedModel: ', selectedModel)*/}
+            {/*    console.log('models:', models)*/}
+            {/*}}>Test</Button>*/}
 
         </Box>
     );
