@@ -1,0 +1,180 @@
+import {ChangeEvent, useEffect, useState, memo} from "react";
+import InputLabel from '@mui/material/InputLabel';
+
+import FormControl from "@mui/material/FormControl";
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import MenuItem from '@mui/material/MenuItem';
+import Select, {SelectChangeEvent} from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
+import {TrainingsContext} from "./context";
+
+const Models = (props) => {
+    const {onChangeModel, onTrainHanlder, onPredictHanlder, trainDisabled, reTrainDisabled, loading} = props;
+
+    const initModel = {
+        id: '',
+        model_name: '',
+        description: '',
+        epochs: '',
+        batchSize: '',
+    }
+
+    const [models, setModels] = useState(new Map())
+    const [selectedModel, setSelectedModel] = useState(initModel)
+
+    const getModels = async () => {
+        const res = await fetch('http://localhost:3000/forecast/models')
+        const models = await res.json()
+        console.log('data', models)
+        const modelsMap = new Map()
+        models.forEach((model: any) => {
+            modelsMap.set(model.id, model)
+        })
+        setModels(modelsMap)
+    }
+
+    useEffect(() => {
+        getModels()
+    }, [])
+
+    console.log('MODELS RENDER')
+
+
+    const onSelectModelHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const modelId = event.target.value;
+        console.log('onChangeModel: ', event.target);
+        setSelectedModel({...models.get(modelId)});
+        onChangeModel(modelId)
+        // console.log('ttt', onChangeModel)
+    }
+
+    const trainModel = async () => {
+        const res = await fetch('http://localhost:3000/forecast/model', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({modelParams: selectedModel}),
+        });
+        const response = await res.json();
+        const {model} = response;
+        await getModels()
+        setSelectedModel(model)
+    }
+
+    const reTrainModel = async () => {
+        const res = await fetch('http://localhost:3000/forecast/model', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({id: selectedModel.id, modelParams: selectedModel}),
+        });
+        const response = await res.json();
+        const {model} = response;
+        await getModels();
+        setSelectedModel(model)
+    }
+
+
+    const getModelsList = () => {
+        return [...models.keys()].map((key: number) => ({...models.get(key)}))
+    }
+
+    const onChangeValue = (value, key) => {
+        const model = selectedModel
+        setSelectedModel({...model, [key]: value})
+    }
+
+    const resetModel = () => setSelectedModel(initModel)
+
+    return (
+        <Box sx={{display: 'grid', gap: 2, gridTemplateColumns: 'repeat(3, 1fr)'}} style={{marginTop: 25}}>
+            <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">Model</InputLabel>
+                <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    size="small"
+                    value={selectedModel.id || ''}
+                    // name={selectedModel}
+                    label="Select Model"
+                    onChange={(event) => onSelectModelHandler(event)}
+                    // onChange={handleChange}
+                >
+                    {getModelsList().map(model => (
+                        <MenuItem value={model.id} name={model.model_name}>{model.model_name}</MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+            <TextField
+                required
+                type={'number'}
+                value={selectedModel.epochs || ''}
+                onChange={(event) =>
+                    onChangeValue(Number(event.target.value), 'epochs')}
+                id="outlined-required"
+                label="Epochs"
+                defaultValue="Hello World"
+                size="small"
+            />
+            <TextField
+                required
+                value={selectedModel.batchSize || ''}
+                type={'number'}
+                onChange={(event) =>
+                    onChangeValue(Number(event.target.value), 'batchSize')}
+                id="outlined-required"
+                label="BatchSize"
+                defaultValue="Hello World"
+                size="small"
+            />
+            <TextField
+                required
+                value={selectedModel.model_name || ''}
+                onChange={(event) =>
+                    onChangeValue(event.target.value, 'model_name')}
+                id="outlined-required"
+                label="Model Name"
+                defaultValue="Hello World"
+                size="small"
+            />
+            <TextField
+                required
+                value={selectedModel.description || ''}
+                onChange={(event) =>
+                    onChangeValue(event.target.value, 'description')}
+                id="outlined-required"
+                label="Description"
+                defaultValue="Hello World"
+                size="small"
+            />
+
+            {/*<button onClick={()=>console.log(getModelslist())}>12312</button>*/}
+
+
+            <Stack spacing={1} direction="row">
+                {
+                    !selectedModel.id && <Button size={'small'} fullWidth variant="contained" color="success"
+                                                 onClick={() => trainModel()}>{'Train'}</Button>
+                }
+                {
+                    selectedModel.id && <Button size={'small'} fullWidth variant="contained" color="success"
+                                                onClick={() => reTrainModel()}>{'Retrain'}</Button>
+                }
+                <Button size={'small'} fullWidth variant="contained">Predict</Button>
+                <Button size={'small'} fullWidth variant="outlined" onClick={() => resetModel()}>Reset</Button>
+            </Stack>
+            <Button variant="contained" color="success" onClick={() => {
+                console.log('selectedModel: ', selectedModel)
+                console.log('models:', models)
+            }}>Test</Button>
+
+        </Box>
+    );
+}
+
+const MemoizedModels = memo(Models);
+export {MemoizedModels}
