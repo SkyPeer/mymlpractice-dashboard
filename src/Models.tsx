@@ -11,7 +11,7 @@ import Stack from '@mui/material/Stack';
 import {LoadingContext, TrainingsContext} from "./context";
 
 const Models = (props) => {
-    const {onTrainingDone} = props;
+    const {onTrainingDone, trainingPeriod, onReset} = props;
     const {setTrainings} = useContext(TrainingsContext);
     const {setLoading} = useContext(LoadingContext);
 
@@ -64,7 +64,7 @@ const Models = (props) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({modelParams: selectedModel}),
+            body: JSON.stringify({modelParams: {...selectedModel, trainingPeriod}}),
         });
         const response = await res.json();
         const {model, trainingLog} = response;
@@ -83,7 +83,10 @@ const Models = (props) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({id: selectedModel.id, modelParams: selectedModel}),
+            body: JSON.stringify({
+                id: selectedModel.id,
+                modelParams: {...selectedModel, trainingPeriod}
+            }),
         });
         const data = await res.json();
         const {model, trainingLog} = data;
@@ -107,6 +110,7 @@ const Models = (props) => {
 
     const resetModel = () => {
         setSelectedModel(initModel)
+        onReset()
         setTrainings([])
     }
 
@@ -139,13 +143,13 @@ const Models = (props) => {
                     id="demo-simple-select"
                     size="small"
                     value={selectedModel.id || ''}
-                    // name={selectedModel}
+                    name={selectedModel.model_name || ''}
                     label="Select Model"
                     onChange={(event) => onSelectModelHandler(event)}
                     // onChange={handleChange}
                 >
                     {getModelsList().map(model => (
-                        <MenuItem value={model.id} name={model.model_name}>{model.model_name}</MenuItem>
+                        <MenuItem value={model.id} key={model.id} name={model.model_name}>{model.model_name}</MenuItem>
                     ))}
                 </Select>
             </FormControl>
@@ -208,8 +212,9 @@ const Models = (props) => {
                 <Button size={'small'} fullWidth variant="outlined" onClick={() => resetModel()}>Reset</Button>
             </Stack>
             {/*<Button variant="contained" color="success" onClick={() => {*/}
-            {/*    console.log('selectedModel: ', selectedModel)*/}
-            {/*    console.log('models:', models)*/}
+            {/*    // console.log('selectedModel: ', selectedModel)*/}
+            {/*    // console.log('models:', models)*/}
+            {/*    console.log('trainingPeriod:', trainingPeriod)*/}
             {/*}}>Test</Button>*/}
 
         </Box>
