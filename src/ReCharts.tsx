@@ -33,8 +33,8 @@ export default function ReCharts() {
     const {trainings} = useContext(TrainingsContext);
 
     // ---------------------------------------------------------
-    const [startValue, setStartValue] = useState<number | null>(null);
-    const [endValue, setEndValue] = useState<number | null>(null);
+    const [startValue, setStartValue] = useState<number | undefined>(undefined);
+    const [endValue, setEndValue] = useState<number | undefined>(undefined);
     const ref = useRef({isFirstClick: false});
     const getData = async () => {
         const res = await fetch('http://localhost:3000/forecast/data')
@@ -43,11 +43,12 @@ export default function ReCharts() {
         if (data[36]) {
             data[36].train = data[36].predict
         }
-
         setData(data)
     }
 
-    useEffect(() => {getData()}, [])
+    useEffect(() => {
+        getData()
+    }, [])
 
     const CustomDot = (props: any) => {
         const {cx, cy, payload, index, dataKey, r = 1} = props;
@@ -76,7 +77,7 @@ export default function ReCharts() {
 
         console.log('ref.current.isFirstClick', ref.current.isFirstClick)
 
-        if(ref.current.isFirstClick) {
+        if (ref.current.isFirstClick) {
             console.log('setStartVale')
             setStartValue(val)
             setEndValue(val)
@@ -90,27 +91,46 @@ export default function ReCharts() {
     const handleMouseMove = (e: MouseHandlerDataParam) => {
         const val = Number(e.activeLabel);
         const isFirstClick = ref.current?.isFirstClick;
-        if(isFirstClick) {
+        if (isFirstClick) {
             console.log('handleMouseMove setEndVale', val)
             setEndValue(val)
         }
     }
 
-    return (
+    const getTrainingPeriod = () => {
+        if (startValue && endValue) {
+            const min = Math.min(startValue, endValue);
+            const max = Math.max(startValue, endValue);
+            return Array.from({length: (max - min + 1)}, (_, i) => min + i)
+        } else {
+            return []
+        }
+    }
 
+    const onResetHandler = () => {
+        setStartValue(undefined);
+        setEndValue(undefined);
+
+    }
+
+    const trainingPeriod = getTrainingPeriod();
+
+    return (
         <div
             className={`min-h-screen p-8 transition-colors ${isDark ? 'bg-gradient-to-br from-slate-900 to-slate-800' : 'bg-gradient-to-br from-slate-50 to-slate-100'}`}>
             <div className="max-w-6xl mx-auto space-y-8">
                 <div className={`rounded-xl shadow-lg p-6 ${isDark ? 'bg-slate-800' : 'bg-white'}`} ref={ref}>
-                    <MemoizedModels onTrainingDone={async () => {
-                        await getData()
-                    }}/>
+                    <MemoizedModels trainingPeriod={trainingPeriod}
+                                    onReset={onResetHandler}
+                                    onTrainingDone={async () => {
+                                        await getData()
+
+                                    }}/>
                     <Progress/>
                     <ResponsiveContainer width="100%" height={300}>
                         <AreaChart data={data}
                                    onMouseDown={handleMouseDown}
                                    onMouseMove={handleMouseMove}
-                                   // onMouseUp={handleMouseUp}
                         >
                             <defs>
                                 <linearGradient id="colorA" x1="0" y1="0" x2="1" y2="1">
