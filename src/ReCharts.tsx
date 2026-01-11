@@ -16,7 +16,9 @@ import {
     ReferenceArea, MouseHandlerDataParam
 } from 'recharts';
 import {MemoizedModels} from "./Models.tsx";
+import {RechartWithArea} from "./RechartWithArea.tsx";
 import {TrainingsContext} from './context.ts'
+import {LoadingContext} from "./context.ts";
 import Progress from "./Progress.tsx";
 
 const blueColor = '#414ba8'

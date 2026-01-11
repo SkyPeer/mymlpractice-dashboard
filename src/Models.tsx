@@ -145,7 +145,7 @@ const Models = (props) => {
                     // onChange={handleChange}
                 >
                     {getModelsList().map(model => (
-                        <MenuItem value={model.id} key={model.id} name={model.model_name}>{model.model_name}</MenuItem>
+                        <MenuItem value={model.id} name={model.model_name}>{model.model_name}</MenuItem>
                     ))}
                 </Select>
             </FormControl>
