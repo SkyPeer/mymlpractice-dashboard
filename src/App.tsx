@@ -2,6 +2,7 @@ import ReCharts from "./ReCharts.tsx";
 import {useState} from "react";
 import {TrainingsContext} from "./context.ts";
 import {LoadingContext} from "./context.ts";
+import {Button} from './components/ui/button.tsx'
 
 function App() {
     const [trainings, setTrainings] = useState([]);
@@ -12,6 +13,7 @@ function App() {
     return (
         <TrainingsContext.Provider value={{trainings, setTrainings}}>
             <LoadingContext.Provider value={{loading, setLoading}}>
+                <Button>123</Button>
                 <ReCharts/>
             </LoadingContext.Provider>
         </TrainingsContext.Provider>
