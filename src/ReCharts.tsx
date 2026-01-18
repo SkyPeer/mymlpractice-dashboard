@@ -1,4 +1,4 @@
-import {useState, useEffect, useContext} from 'react';
+import {useState, useEffect, useContext, useRef} from 'react';
 import {
     LineChart,
     Line,
@@ -13,7 +13,7 @@ import {
     Scatter,
     ComposedChart,
     ZAxis,
-    ReferenceArea
+    ReferenceArea, MouseHandlerDataParam
 } from 'recharts';
 import {MemoizedModels} from "./Models.tsx";
 import {RechartWithArea} from "./RechartWithArea.tsx";
@@ -24,27 +24,34 @@ import Progress from "./Progress.tsx";
 const blueColor = '#414ba8'
 const yellowColor = '#ffb422'
 const redColor = '#fa4f58'
+const greenColor = 'rgba(102,187,107,0.64)'
 
 export default function ReCharts() {
     const [activeIndex, setActiveIndex] = useState(null);
     const [isDark, setIsDark] = useState(true); // TODO: need switch by theme
     const [data, setData] = useState([{month: null, temp: null, train: null, predict: null}]);
-    const {trainings, setTrainings} = useContext(TrainingsContext);
-    const {setLoading} = useContext(LoadingContext);
+    const {trainings} = useContext(TrainingsContext);
 
+    // ---------------------------------------------------------
+    const [startValue, setStartValue] = useState<number | undefined>(undefined);
+    const [endValue, setEndValue] = useState<number | undefined>(undefined);
+    const ref = useRef({isFirstClick: false});
     const getData = async () => {
-        const resJson = await fetch('http://localhost:3000/forecast/data')
-        const dataParsed = await resJson.json()
-        setData(dataParsed)
+        const res = await fetch('http://localhost:3000/forecast/data')
+        const data = await res.json()
+        // TODO: Will be delete!
+        if (data[36]) {
+            data[36].train = data[36].predict
+        }
+        setData(data)
     }
 
     useEffect(() => {
         getData()
-        // getTrainings(68)
     }, [])
 
     const CustomDot = (props: any) => {
-        const {cx, cy, payload, index, dataKey} = props;
+        const {cx, cy, payload, index, dataKey, r = 1} = props;
         const isActive = index == activeIndex;
         if (!payload[dataKey]) {
             return null;
@@ -53,7 +60,8 @@ export default function ReCharts() {
         return (
             <circle cx={cx}
                     cy={cy}
-                    r={isActive ? 3 : 2.5}
+                // r={isActive ? 3 : 2.5}
+                    r={r}
                     fill={props.fill}
                 // stroke="#fff"
                 // strokeWidth={0.5}
@@ -62,70 +70,76 @@ export default function ReCharts() {
         );
     };
 
-    return (
+    const handleMouseDown = (e: MouseHandlerDataParam) => {
+        const val = Number(e.activeLabel);
+        const isFirstClick = ref.current?.isFirstClick;
+        ref.current.isFirstClick = !isFirstClick;
 
+        console.log('ref.current.isFirstClick', ref.current.isFirstClick)
+
+        if (ref.current.isFirstClick) {
+            console.log('setStartVale')
+            setStartValue(val)
+            setEndValue(val)
+        } else {
+            console.log('setEndVale')
+            setEndValue(val)
+            ref.current.isFirstClick = false;
+        }
+    };
+
+    const handleMouseMove = (e: MouseHandlerDataParam) => {
+        const val = Number(e.activeLabel);
+        const isFirstClick = ref.current?.isFirstClick;
+        if (isFirstClick) {
+            console.log('handleMouseMove setEndVale', val)
+            setEndValue(val)
+        }
+    }
+
+    const getTrainingPeriod = () => {
+        if (startValue && endValue) {
+            const min = Math.min(startValue, endValue);
+            const max = Math.max(startValue, endValue);
+            return Array.from({length: (max - min + 1)}, (_, i) => min + i)
+        } else {
+            return []
+        }
+    }
+
+    const onResetHandler = () => {
+        setStartValue(undefined);
+        setEndValue(undefined);
+
+    }
+
+    const trainingPeriod = getTrainingPeriod();
+
+    return (
         <div
             className={`min-h-screen p-8 transition-colors ${isDark ? 'bg-gradient-to-br from-slate-900 to-slate-800' : 'bg-gradient-to-br from-slate-50 to-slate-100'}`}>
             <div className="max-w-6xl mx-auto space-y-8">
-                <div className="text-center mb-8 flex items-center justify-center gap-4">
-                    <div>
-                        <h1 className={`text-4xl font-bold mb-1 ${isDark ? 'text-white' : 'text-slate-800'}`}>
-                            Line Chart
-                        </h1>
-                        <p className={isDark ? 'text-slate-300' : 'text-slate-600'}>
-                            Highlighting, Gradient Areas, and Interactive Features
-                        </p>
-                    </div>
-                    {/*<button*/}
-                    {/*    onClick={() => setIsDark(!isDark)}*/}
-                    {/*    className={`px-4 py-2 rounded-lg font-semibold transition-colors ${*/}
-                    {/*        isDark*/}
-                    {/*            ? 'bg-slate-700 text-white hover:bg-slate-600'*/}
-                    {/*            : 'bg-slate-800 text-white hover:bg-slate-700'*/}
-                    {/*    }`}*/}
-                    {/*>*/}
-                    {/*    {isDark ? '☀️ Light' : '🌙 Dark'}*/}
-                    {/*</button>*/}
-                </div>
+                <div className={`rounded-xl shadow-lg p-6 ${isDark ? 'bg-slate-800' : 'bg-white'}`} ref={ref}>
+                    <MemoizedModels trainingPeriod={trainingPeriod}
+                                    onReset={onResetHandler}
+                                    onTrainingDone={async () => {
+                                        await getData()
 
-                <div className={`rounded-xl shadow-lg p-6 ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
-
-                    {/*<RechartWithArea />*/}
-
-                    <MemoizedModels onTrainingDone={async () => {
-                        await getData()
-                    }}
-                    />
-
-                    {/*    onChangeModel={(modelId: number) => {*/}
-                    {/*        return getTrainings(modelId)*/}
-                    {/*    }}*/}
-                    {/*    // onChangeModel={getTrainings(modelId)}*/}
-                    {/*/>*/}
-                    <Progress />
-                    <h2 className={`text-2xl font-semibold mb-4 ${isDark ? 'text-white' : 'text-slate-800'}`}>
-                        Random Temperature Char
-                    </h2>
-
-                    {/*<button onClick={() => {*/}
-                    {/*    getData();*/}
-                    {/*    // getTrainings(68)*/}
-                    {/*}}>UpdateData*/}
-                    {/*</button>*/}
-
+                                    }}/>
+                    <Progress/>
                     <ResponsiveContainer width="100%" height={300}>
                         <AreaChart data={data}
-                            // onMouseDown={(e) => console.log({start: e.activeLabel, end: null})}
-                            // onMouseUp={(e) => console.log({start: e.activeLabel, end: null})}
+                                   onMouseDown={handleMouseDown}
+                                   onMouseMove={handleMouseMove}
                         >
                             <defs>
-                                <linearGradient id="colorA" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="2%" stopColor={blueColor} stopOpacity={0.8}/>
-                                    <stop offset="99%" stopColor={blueColor} stopOpacity={0.03}/>
+                                <linearGradient id="colorA" x1="0" y1="0" x2="1" y2="1">
+                                    <stop offset="5%" stopColor={greenColor} stopOpacity={0.2}/>
+                                    <stop offset="99%" stopColor={greenColor} stopOpacity={0.001}/>
                                 </linearGradient>
-                                <linearGradient id="colorB" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor={yellowColor} stopOpacity={0.8}/>
-                                    <stop offset="99%" stopColor={yellowColor} stopOpacity={0.03}/>
+                                <linearGradient id="colorB" x1="1" y1="0" x2="0" y2="0">
+                                    <stop offset="5%" stopColor={yellowColor} stopOpacity={0.2}/>
+                                    <stop offset="99%" stopColor={yellowColor} stopOpacity={0.001}/>
                                 </linearGradient>
                                 <linearGradient id="colorC" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="5%" stopColor={redColor} stopOpacity={0.8}/>
@@ -135,7 +149,12 @@ export default function ReCharts() {
                             <CartesianGrid horizontal={true} vertical={false} strokeDasharray="3 3"
                                            stroke={isDark ? '#475569' : '#e2e8f0'}/>
                             <XAxis dataKey='month' stroke={isDark ? '#94a3b8' : '#64748b'}/>
-                            <YAxis type="number" domain={[13, 30]} stroke={isDark ? '#94a3b8' : '#64748b'}/>
+                            <YAxis label={{
+                                value: 'Temperature (°C)', angle: -90, position: 'insideLeft',
+                                style: {textAnchor: 'middle', fill: 'white', fontSize: 14}
+                            }}
+                                   type="number" domain={[13, 30]} stroke={isDark ? '#94a3b8' : '#64748b'}
+                            />
                             <Tooltip
                                 contentStyle={{
                                     backgroundColor: isDark ? '#1e293b' : '#f8fafc',
@@ -144,15 +163,15 @@ export default function ReCharts() {
                                     color: isDark ? '#fff' : '#0f172a'
                                 }}
                             />
-                            <Legend/>
+                            <Legend style={{marginTop: 5}}/>
                             <Area dataKey="temp"
-                                  type="natural"
-                                  stroke={blueColor}
+                                  type='natural'
+                                  stroke={greenColor}
                                   strokeWidth={2}
-                                  fillOpacity={1}
+                                  fillOpacity={0.8}
                                   fill="url(#colorA)"
-                                  name="tempature"
-                                  dot={<CustomDot fill={blueColor}/>}
+                                  name="temperature"
+                                  dot={<CustomDot r={3} fill={greenColor}/>}
                             />
                             <Area dataKey="predict"
                                   type="natural"
@@ -166,35 +185,48 @@ export default function ReCharts() {
                             <Line dataKey="train"
                                   type="natural"
                                   stroke={redColor}
-                                  strokeWidth={activeIndex !== null ? 2 : 2}
+                                  strokeWidth={activeIndex !== null ? 3 : 3}
                                   name="train"
                                 // dot={false}
                                   dot={<CustomDot fill={redColor}/>}
                                 // dot={{ fill: '#3b82f6', r: 1.5 }}
                                 // activeDot={{ r: 8, fill: '#2563eb' }}
                             />
-                            {/*<ReferenceArea*/}
-                            {/*    x1={5}*/}
-                            {/*    x2={10}*/}
-                            {/*    y1={12}*/}
-                            {/*    y2={27}*/}
-                            {/*    fill="rgba(0, 255, 0, 0.3"*/}
-                            {/*    fillOpacity={1}*/}
-                            {/*    strokeOpacity={0}*/}
-                            {/*    // style={{backgroundColor: "green", borderRadius: 15}}*/}
-                            {/*/>*/}
+                            <ReferenceArea
+                                x1={startValue}
+                                x2={endValue}
+                                fill={yellowColor}
+                                fillOpacity={0.3}
+                                strokeOpacity={0.8}
+                            />
+
                         </AreaChart>
+
                     </ResponsiveContainer>
-                    <h2 className={`text-2xl font-semibold mb-4 ${isDark ? 'text-white' : 'text-slate-800'}`}>
+                    <div style={{display: 'flex', justifyContent: 'center', color: 'gray'}}>
+                        <span>Weather data was provided by Open-Meteo API https://open-meteo.com/</span>
+                    </div>
+
+                    <h3 className={`text-2xl font-semibold mb-4 ${isDark ? 'text-white' : 'text-slate-800'}`}>
                         Trainings
-                    </h2>
+                    </h3>
                     <ResponsiveContainer width="100%" height={300}>
                         <AreaChart data={trainings}>
                             <CartesianGrid horizontal={true} vertical={false} strokeDasharray="3 3"
                                            stroke={isDark ? '#475569' : '#e2e8f0'}/>
-                            <XAxis dataKey='epoch' stroke={isDark ? '#94a3b8' : '#64748b'}/>
-                            <YAxis type="number" domain={[-50, 500]}
-                                   stroke={isDark ? '#94a3b8' : '#64748b'}/>
+                            <XAxis
+                                label={{
+                                    value: 'Epoch', position: 'insideBottom', offset: -2,
+                                    style: {textAnchor: 'middle', fill: 'white', fontSize: 14}
+                                }}
+                                dataKey='epoch' stroke={isDark ? '#94a3b8' : '#64748b'}/>
+                            <YAxis
+                                label={{
+                                    value: 'Loss', angle: -90, position: 'insideLeft',
+                                    style: {textAnchor: 'middle', fill: 'white', fontSize: 14}
+                                }}
+                                type="number" domain={[-50, 500]}
+                                stroke={isDark ? '#94a3b8' : '#64748b'}/>
                             <Tooltip
                                 contentStyle={{
                                     backgroundColor: isDark ? '#1e293b' : '#f8fafc',
@@ -203,7 +235,7 @@ export default function ReCharts() {
                                     color: isDark ? '#fff' : '#0f172a'
                                 }}
                             />
-                            <Legend/>
+                            {/*<Legend/>*/}
                             <Area dataKey="loss"
                                   type="natural"
                                   stroke={yellowColor}
@@ -215,6 +247,7 @@ export default function ReCharts() {
                             />
                         </AreaChart>
                     </ResponsiveContainer>
+                    <div></div>
                 </div>
             </div>
         </div>
