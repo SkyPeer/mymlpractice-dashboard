@@ -117,9 +117,9 @@ export default function ReCharts() {
 
     return (
         <div
-            className={`min-h-screen p-8 transition-colors ${isDark ? 'bg-gradient-to-br from-slate-900 to-slate-800' : 'bg-gradient-to-br from-slate-50 to-slate-100'}`}>
+            className={`min-h-screen p-8 transition-colors`}>
             <div className="max-w-6xl mx-auto space-y-8">
-                <div className={`rounded-xl shadow-lg p-6 ${isDark ? 'bg-slate-800' : 'bg-white'}`} ref={ref}>
+                <div className={`rounded-xl shadow-lg p-6`} ref={ref}>
                     <MemoizedModels trainingPeriod={trainingPeriod}
                                     onReset={onResetHandler}
                                     onTrainingDone={async () => {

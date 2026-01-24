@@ -2,7 +2,10 @@ import ReCharts from "./ReCharts.tsx";
 import {useState} from "react";
 import {TrainingsContext} from "./context.ts";
 import {LoadingContext} from "./context.ts";
-import {Button} from './components/ui/button.tsx'
+import {ThemeProvider} from "@/components/theme-provider"
+import {Button} from "@/components/ui/button"
+import './App.css'
+import {ModeToggle} from "@/components/mode-toggle.tsx";
 
 function App() {
     const [trainings, setTrainings] = useState([]);
@@ -11,12 +14,20 @@ function App() {
     });
 
     return (
-        <TrainingsContext.Provider value={{trainings, setTrainings}}>
-            <LoadingContext.Provider value={{loading, setLoading}}>
-                <Button>123</Button>
-                <ReCharts/>
-            </LoadingContext.Provider>
-        </TrainingsContext.Provider>
+            <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+                <ModeToggle />
+                <div className="flex flex-wrap items-center gap-2 md:flex-row">
+                    <Button variant='outline'>Button</Button>
+                    {/*<Button variant="outline" size="icon" aria-label="Submit">*/}
+                    {/*    <ArrowUpIcon />*/}
+                    {/*</Button>*/}
+                    <TrainingsContext.Provider value={{trainings, setTrainings}}>
+                        <LoadingContext.Provider value={{loading, setLoading}}>
+                            <ReCharts/>
+                        </LoadingContext.Provider>
+                    </TrainingsContext.Provider>
+                </div>
+            </ThemeProvider>
     )
 }
 
