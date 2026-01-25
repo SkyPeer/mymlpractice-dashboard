@@ -15,24 +15,29 @@ function App() {
     });
 
     return (
-            <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-                <ModeToggle />
-                <Layout>
-                    <div className="flex flex-wrap items-center gap-2 md:flex-row">
-                        <Button variant='outline'>Button</Button>
-                        {/*<Button variant="outline" size="icon" aria-label="Submit">*/}
-                        {/*    <ArrowUpIcon />*/}
-                        {/*</Button>*/}
-                        <TrainingsContext.Provider value={{trainings, setTrainings}}>
-                            <LoadingContext.Provider value={{loading, setLoading}}>
-                                <ReCharts/>
-                            </LoadingContext.Provider>
-                        </TrainingsContext.Provider>
-                    </div>
-                </Layout>
+            // <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+            //     <ModeToggle />
 
-            </ThemeProvider>
-    )
+
+
+                // <Layout>
+                //
+                // </Layout>
+
+            // </ThemeProvider>
+    <div className="flex flex-wrap items-center gap-2 md:flex-row">
+        <Button variant='outline'>Button</Button>
+        {/*<Button variant="outline" size="icon" aria-label="Submit">*/}
+        {/*    <ArrowUpIcon />*/}
+        {/*</Button>*/}
+        <TrainingsContext.Provider value={{trainings, setTrainings}}>
+            <LoadingContext.Provider value={{loading, setLoading}}>
+                <ReCharts/>
+            </LoadingContext.Provider>
+        </TrainingsContext.Provider>
+    </div>
+
+)
 }
 
 export default App
