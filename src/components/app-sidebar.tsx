@@ -1,4 +1,5 @@
 import * as React from "react"
+import {Logo} from './Logo.tsx'
 
 // import { SearchForm } from '@/components/search-form'
 // import { VersionSwitcher } from '@/components/version-switcher'
@@ -156,7 +157,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 {/*    defaultVersion={data.versions[0]}*/}
                 {/*/>*/}
                 {/*<SearchForm />*/}
-                <div>header</div>
+                <Logo />
             </SidebarHeader>
             <SidebarContent>
                 {/* We create a SidebarGroup for each parent. */}
