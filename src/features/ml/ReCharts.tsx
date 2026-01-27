@@ -18,7 +18,6 @@ import {
 import {MemoizedModels} from "./Models.tsx";
 import {RechartWithArea} from "./RechartWithArea.tsx";
 import {TrainingsContext} from '../../context.ts'
-import {LoadingContext} from "../../context.ts";
 import Progress from "../../Progress.tsx";
 
 const blueColor = '#414ba8'
@@ -248,7 +247,6 @@ export default function ReCharts() {
                             />
                         </AreaChart>
                     </ResponsiveContainer>
-                    <div></div>
                 </div>
             </div>
         </div>

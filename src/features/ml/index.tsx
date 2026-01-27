@@ -1,6 +1,5 @@
 import ReCharts from "./ReCharts.tsx";
 import {TrainingsContext, LoadingContext} from "../../context.ts";
-// import {LoadingContext} from "./context.ts";
 import {useState} from "react";
 
 export const ML = () => {
