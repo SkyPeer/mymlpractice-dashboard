@@ -8,7 +8,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select, {SelectChangeEvent} from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
-import {LoadingContext, TrainingsContext} from "./context";
+import {LoadingContext, TrainingsContext} from "@/context.ts";
 
 const Models = (props) => {
     const {onTrainingDone, trainingPeriod, onReset} = props;

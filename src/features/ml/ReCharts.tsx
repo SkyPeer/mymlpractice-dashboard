@@ -17,9 +17,9 @@ import {
 } from 'recharts';
 import {MemoizedModels} from "./Models.tsx";
 import {RechartWithArea} from "./RechartWithArea.tsx";
-import {TrainingsContext} from './context.ts'
-import {LoadingContext} from "./context.ts";
-import Progress from "./Progress.tsx";
+import {TrainingsContext} from '../../context.ts'
+import {LoadingContext} from "../../context.ts";
+import Progress from "../../Progress.tsx";
 
 const blueColor = '#414ba8'
 const yellowColor = '#ffb422'
@@ -117,7 +117,8 @@ export default function ReCharts() {
 
     return (
         <div
-            className={`min-h-screen p-8 transition-colors`}>
+            className={`min-h-screen p-8 transition-colors`}
+        >
             <div className="max-w-6xl mx-auto space-y-8">
                 <div className={`rounded-xl shadow-lg p-6`} ref={ref}>
                     <MemoizedModels trainingPeriod={trainingPeriod}
