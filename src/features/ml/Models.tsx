@@ -1,11 +1,24 @@
 import {ChangeEvent, useEffect, useState, memo, useContext} from "react";
 import InputLabel from '@mui/material/InputLabel';
+import {Input} from "@/components/ui/input"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 
 import FormControl from "@mui/material/FormControl";
-import Button from '@mui/material/Button';
+import {Button} from '@/components/ui/button'
 import Box from '@mui/material/Box';
 import MenuItem from '@mui/material/MenuItem';
-import Select, {SelectChangeEvent} from '@mui/material/Select';
+import {
+    ButtonGroup,
+    ButtonGroupSeparator,
+    ButtonGroupText,
+} from "@/components/ui/button-group"
+// import Select, {SelectChangeEvent} from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 import {LoadingContext, TrainingsContext} from "@/context.ts";
@@ -48,12 +61,8 @@ const Models = (props) => {
         setTrainings(data)
     }
 
-    const onSelectModelHandler = async (event: ChangeEvent<HTMLInputElement>) => {
-        const modelId = event.target.value;
-        console.log('onChangeModel: ', event.target);
+    const onSelectModelHandler = async (modelId: string) => {
         setSelectedModel({...models.get(modelId)});
-        // onChangeModel(modelId)
-        // console.log('ttt', onChangeModel)
         await getTrainings(Number(modelId));
     }
 
@@ -103,7 +112,8 @@ const Models = (props) => {
         return [...models.keys()].map((key: number) => ({...models.get(key)}))
     }
 
-    const onChangeValue = (value, key) => {
+    type TOnChangeValue = 'epochs' | 'batchSize' | 'description' | 'model_name'
+    const onChangeValue = (value: number | string, key: TOnChangeValue) => {
         const model = selectedModel
         setSelectedModel({...model, [key]: value})
     }
@@ -135,87 +145,53 @@ const Models = (props) => {
     }
 
     return (
-        <Box sx={{display: 'grid', gap: 2, gridTemplateColumns: 'repeat(3, 1fr)'}} style={{marginTop: 25}}>
-            <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Model</InputLabel>
-                <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    size="small"
-                    value={selectedModel.id || ''}
-                    name={selectedModel.model_name || ''}
-                    label="Select Model"
-                    onChange={(event) => onSelectModelHandler(event)}
-                    // onChange={handleChange}
-                >
+        <Box sx={{display: 'grid', gap: 2, gridTemplateColumns: 'repeat(3, 1fr)'}}>
+
+            <Select onValueChange={(value) => onSelectModelHandler(value)}>
+                <SelectTrigger value={selectedModel.id || ''} className="w-full">
+                    <SelectValue placeholder="Model"/>
+                </SelectTrigger>
+                <SelectContent>
                     {getModelsList().map(model => (
-                        <MenuItem value={model.id} key={model.id} name={model.model_name}>{model.model_name}</MenuItem>
+                        <SelectItem value={model.id} key={model.id}>{model.model_name}</SelectItem>
                     ))}
-                </Select>
-            </FormControl>
-            <TextField
-                required
-                type={'number'}
-                value={selectedModel.epochs || ''}
-                onChange={(event) =>
-                    onChangeValue(Number(event.target.value), 'epochs')}
-                id="outlined-required"
-                label="Epochs"
-                defaultValue="200"
-                size="small"
-            />
-            <TextField
-                required
-                value={selectedModel.batchSize || ''}
-                type={'number'}
-                onChange={(event) =>
-                    onChangeValue(Number(event.target.value), 'batchSize')}
-                id="outlined-required"
-                label="BatchSize"
-                defaultValue="12"
-                size="small"
-            />
-            <TextField
-                required
-                value={selectedModel.model_name || ''}
-                onChange={(event) =>
-                    onChangeValue(event.target.value, 'model_name')}
-                id="outlined-required"
-                label="Model Name"
-                defaultValue="Hello World"
-                size="small"
-            />
-            <TextField
-                required
-                value={selectedModel.description || ''}
-                onChange={(event) =>
-                    onChangeValue(event.target.value, 'description')}
-                id="outlined-required"
-                label="Description"
-                defaultValue="Hello World"
-                size="small"
-            />
+                </SelectContent>
+            </Select>
 
-            {/*<button onClick={()=>console.log(getModelslist())}>12312</button>*/}
+            <Input placeholder="Epochs"
+                   value={selectedModel.epochs || ''}
+                   onChange={(event) =>
+                       onChangeValue(Number(event.target.value), 'epochs')}
+            />
+            <Input placeholder="Batch Size"
+                   value={selectedModel.batchSize || ''}
+                   onChange={(event) =>
+                       onChangeValue(Number(event.target.value), 'batchSize')}
+            />
+            <Input placeholder="Model Name"
+                   value={selectedModel.model_name || ''}
+                   onChange={(event) =>
+                       onChangeValue(Number(event.target.value), 'model_name')}
+            />
+            <Input placeholder="Description"
+                   value={selectedModel.description || ''}
+                   onChange={(event) =>
+                       onChangeValue(Number(event.target.value), 'description')}
+            />
+            <div className="flex flex-row justify-between gap-2">
 
 
-            <Stack spacing={1} direction="row">
                 {
-                    !selectedModel.id && <Button size={'small'} fullWidth variant="contained" color="success"
-                                                 onClick={() => trainModel()}>{'Train'}</Button>
+                    !selectedModel.id && <Button className="w-1/3" variant="default" onClick={trainModel}>Train</Button>
                 }
                 {
-                    selectedModel.id && <Button size={'small'} fullWidth variant="contained" color="success"
-                                                onClick={() => reTrainModel()}>{'Retrain'}</Button>
+                    selectedModel.id && <Button className="w-1/3" variant="default" onClick={reTrainModel}>Re Train</Button>
                 }
-                <Button size={'small'} fullWidth variant="contained" onClick={() => predictHanlder()}>Predict</Button>
-                <Button size={'small'} fullWidth variant="outlined" onClick={() => resetModel()}>Reset</Button>
-            </Stack>
-            {/*<Button variant="contained" color="success" onClick={() => {*/}
-            {/*    // console.log('selectedModel: ', selectedModel)*/}
-            {/*    // console.log('models:', models)*/}
-            {/*    console.log('trainingPeriod:', trainingPeriod)*/}
-            {/*}}>Test</Button>*/}
+                <Button variant="outline" className="w-1/3" onClick={predictHanlder}>Predict</Button>
+                <Button variant="outline" className="w-1/3" onClick={resetModel}>Reset</Button>
+
+            </div>
+
 
         </Box>
     );
