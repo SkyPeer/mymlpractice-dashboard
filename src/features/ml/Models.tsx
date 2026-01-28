@@ -8,6 +8,15 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import {
+    Card,
+    // CardAction,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
 
 import FormControl from "@mui/material/FormControl";
 import {Button} from '@/components/ui/button'
@@ -145,56 +154,88 @@ const Models = (props) => {
     }
 
     return (
-        <Box sx={{display: 'grid', gap: 2, gridTemplateColumns: 'repeat(3, 1fr)'}}>
+        // <Box sx={{display: 'grid', gap: 2, gridTemplateColumns: 'repeat(3, 1fr)'}}>
+        <div className="flex flex-1 flex-col gap-4 p-4">
 
-            <Select onValueChange={(value) => onSelectModelHandler(value)}>
-                <SelectTrigger value={selectedModel.id || ''} className="w-full">
-                    <SelectValue placeholder="Model"/>
-                </SelectTrigger>
-                <SelectContent>
-                    {getModelsList().map(model => (
-                        <SelectItem value={model.id} key={model.id}>{model.model_name}</SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
+            <Card className="bg-background">
+                {/*<CardHeader>*/}
+                {/*<CardTitle>Model Setting</CardTitle>*/}
+                {/*<CardDescription>Card Description</CardDescription>*/}
+                {/*<CardAction>Card Action</CardAction>*/}
+                {/*</CardHeader>*/}
+                <CardContent className="pb-5 pt-5">
+                    <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+                        <Select onValueChange={(value) => onSelectModelHandler(value)}>
+                            <SelectTrigger value={selectedModel.id || ''} className="w-full">
+                                <SelectValue placeholder="Model"/>
+                            </SelectTrigger>
+                            <SelectContent>
+                                {getModelsList().map(model => (
+                                    <SelectItem value={model.id} key={model.id}>{model.model_name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
 
-            <Input placeholder="Epochs"
-                   value={selectedModel.epochs || ''}
-                   onChange={(event) =>
-                       onChangeValue(Number(event.target.value), 'epochs')}
-            />
-            <Input placeholder="Batch Size"
-                   value={selectedModel.batchSize || ''}
-                   onChange={(event) =>
-                       onChangeValue(Number(event.target.value), 'batchSize')}
-            />
-            <Input placeholder="Model Name"
-                   value={selectedModel.model_name || ''}
-                   onChange={(event) =>
-                       onChangeValue(Number(event.target.value), 'model_name')}
-            />
-            <Input placeholder="Description"
-                   value={selectedModel.description || ''}
-                   onChange={(event) =>
-                       onChangeValue(Number(event.target.value), 'description')}
-            />
-            <div className="flex flex-row justify-between gap-2">
+                        <Input placeholder="Epochs"
+                               value={selectedModel.epochs || ''}
+                               onChange={(event) =>
+                                   onChangeValue(Number(event.target.value), 'epochs')}
+                        />
+
+                        <Input placeholder="Batch Size"
+                               value={selectedModel.batchSize || ''}
+                               onChange={(event) =>
+                                   onChangeValue(Number(event.target.value), 'batchSize')}
+                        />
+                        <Input placeholder="Model Name"
+                               value={selectedModel.model_name || ''}
+                               onChange={(event) =>
+                                   onChangeValue(Number(event.target.value), 'model_name')}
+                        />
+                        <Input placeholder="Description"
+                               value={selectedModel.description || ''}
+                               onChange={(event) =>
+                                   onChangeValue(Number(event.target.value), 'description')}
+                        />
+                        <div className="flex flex-row justify-between gap-1">
+                            {!selectedModel.id &&
+                                <Button className="w-1/3" variant="default" onClick={trainModel}>Train</Button>
+                            }
+                            {selectedModel.id &&
+                                <Button className="w-1/3" variant="default" onClick={reTrainModel}>Re Train</Button>
+                            }
+                            <Button variant="outline" className="w-1/3" onClick={predictHanlder}>Predict</Button>
+                            <Button variant="outline" className="w-1/3" onClick={resetModel}>Reset</Button>
+                        </div>
+                    </div>
+
+                </CardContent>
+                {/*<CardFooter>*/}
+                {/*    <p>Card Footer</p>*/}
+                {/*</CardFooter>*/}
+            </Card>
 
 
-                {
-                    !selectedModel.id && <Button className="w-1/3" variant="default" onClick={trainModel}>Train</Button>
-                }
-                {
-                    selectedModel.id && <Button className="w-1/3" variant="default" onClick={reTrainModel}>Re Train</Button>
-                }
-                <Button variant="outline" className="w-1/3" onClick={predictHanlder}>Predict</Button>
-                <Button variant="outline" className="w-1/3" onClick={resetModel}>Reset</Button>
+            {/*<div className="bg-muted/50 aspect-video rounded-xl">*/}
+            {/*    */}
+            {/*</div>*/}
+            {/*<div className="bg-muted/50 aspect-video rounded-xl">*/}
 
-            </div>
+            {/*</div>*/}
+            {/*/!*<div className="bg-muted/50 aspect-video rounded-xl"></div>*!/*/}
+            {/*/!*<div className="bg-muted/50 aspect-video rounded-xl"></div>*!/*/}
 
 
-        </Box>
-    );
+            {/*<div className="flex flex-1 flex-col gap-4 p-4">*/}
+            {/*    <div className="grid auto-rows-min gap-4 md:grid-cols-3">*/}
+            {/*        <div className="bg-muted/50 aspect-video rounded-xl"/>*/}
+            {/*        <div className="bg-muted/50 aspect-video rounded-xl"/>*/}
+            {/*        <div className="bg-muted/50 aspect-video rounded-xl"/>*/}
+            {/*    </div>*/}
+            {/*    <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min"/>*/}
+            {/*</div>*/}
+
+        </div>);
 }
 
 const MemoizedModels = memo(Models);
