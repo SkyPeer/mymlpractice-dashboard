@@ -17,9 +17,8 @@ import {
 } from 'recharts';
 import {MemoizedModels} from "./Models.tsx";
 import {RechartWithArea} from "./RechartWithArea.tsx";
-import {TrainingsContext} from './context.ts'
-import {LoadingContext} from "./context.ts";
-import Progress from "./Progress.tsx";
+import {TrainingsContext} from '../../context.ts'
+import Progress from "../../Progress.tsx";
 
 const blueColor = '#414ba8'
 const yellowColor = '#ffb422'
@@ -116,10 +115,10 @@ export default function ReCharts() {
     const trainingPeriod = getTrainingPeriod();
 
     return (
-        <div
-            className={`min-h-screen p-8 transition-colors ${isDark ? 'bg-gradient-to-br from-slate-900 to-slate-800' : 'bg-gradient-to-br from-slate-50 to-slate-100'}`}>
-            <div className="max-w-6xl mx-auto space-y-8">
-                <div className={`rounded-xl shadow-lg p-6 ${isDark ? 'bg-slate-800' : 'bg-white'}`} ref={ref}>
+        // <div className={`min-h-screen p-8 transition-colors`}>
+        //     <div className="max-w-6xl mx-auto space-y-8">
+        //         <div className={`rounded-xl shadow-lg p-6`} ref={ref}>
+                    <div ref={ref}>
                     <MemoizedModels trainingPeriod={trainingPeriod}
                                     onReset={onResetHandler}
                                     onTrainingDone={async () => {
@@ -247,10 +246,9 @@ export default function ReCharts() {
                             />
                         </AreaChart>
                     </ResponsiveContainer>
-                    <div></div>
                 </div>
-            </div>
-        </div>
+            // </div>
+        // </div>
 
     );
 }

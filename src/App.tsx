@@ -1,20 +1,13 @@
-import ReCharts from "./ReCharts.tsx";
-import {useState} from "react";
-import {TrainingsContext} from "./context.ts";
-import {LoadingContext} from "./context.ts";
+import {ThemeProvider} from "@/components/theme-provider"
+// import './App.css'
+import './styles/globals.css'
+import Page from "./Page";
 
 function App() {
-    const [trainings, setTrainings] = useState([]);
-    const [loading, setLoading] = useState({
-        status: false, text: ''
-    });
-
     return (
-        <TrainingsContext.Provider value={{trainings, setTrainings}}>
-            <LoadingContext.Provider value={{loading, setLoading}}>
-                <ReCharts/>
-            </LoadingContext.Provider>
-        </TrainingsContext.Provider>
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+            <Page/>
+        </ThemeProvider>
     )
 }
 

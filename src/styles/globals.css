@@ -7,12 +7,12 @@
 /*---break---*/
 
 /* Dark theme enhancements */
-@media (prefers-color-scheme: dark) {
-  /* Already dark, but ensure consistency */
-  .app {
-    background: var(--bg-primary);
-  }
-}
+/*@media (prefers-color-scheme: dark) {*/
+/*  !* Already dark, but ensure consistency *!*/
+/*  .app {*/
+/*    background: var(--bg-primary);*/
+/*  }*/
+/*}*/
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
