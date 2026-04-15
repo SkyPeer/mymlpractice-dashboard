@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import Card from '@mui/material/Card';
 import { LineChart, Line, Area, AreaChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Scatter, ComposedChart, ZAxis } from 'recharts';
 
 export default function ReChartsExample() {

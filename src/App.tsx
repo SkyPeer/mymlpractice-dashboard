@@ -1,5 +1,6 @@
 import {ThemeProvider} from "@/components/theme-provider"
-import './App.css'
+// import './App.css'
+import './styles/globals.css'
 import Page from "./Page";
 
 function App() {

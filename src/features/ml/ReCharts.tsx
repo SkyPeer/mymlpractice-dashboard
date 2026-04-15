@@ -115,11 +115,10 @@ export default function ReCharts() {
     const trainingPeriod = getTrainingPeriod();
 
     return (
-        <div
-            className={`min-h-screen p-8 transition-colors`}
-        >
-            <div className="max-w-6xl mx-auto space-y-8">
-                <div className={`rounded-xl shadow-lg p-6`} ref={ref}>
+        // <div className={`min-h-screen p-8 transition-colors`}>
+        //     <div className="max-w-6xl mx-auto space-y-8">
+        //         <div className={`rounded-xl shadow-lg p-6`} ref={ref}>
+                    <div ref={ref}>
                     <MemoizedModels trainingPeriod={trainingPeriod}
                                     onReset={onResetHandler}
                                     onTrainingDone={async () => {
@@ -248,8 +247,8 @@ export default function ReCharts() {
                         </AreaChart>
                     </ResponsiveContainer>
                 </div>
-            </div>
-        </div>
+            // </div>
+        // </div>
 
     );
 }

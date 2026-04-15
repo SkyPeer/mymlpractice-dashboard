@@ -1,25 +1,33 @@
-import {useContext} from "react";
-import Box from '@mui/material/Box';
-import LinearProgress from '@mui/material/LinearProgress';
-import ModelTrainingIcon from '@mui/icons-material/ModelTraining';
-import {Typography} from '@mui/material';
+import {useContext, Fragment} from "react";
 import {LoadingContext} from "./context.ts";
-import Stack from '@mui/material/Stack';
-
+import {
+    Item,
+    ItemContent,
+    ItemMedia,
+    ItemTitle,
+} from "@/components/ui/item"
+import { Spinner } from "@/components/ui/spinner"
 
 export default function Progress() {
     const {loading} = useContext(LoadingContext);
     const {status, text} = loading;
 
-    return (<Box sx={{width: '100%', height: 15, marginTop: 2, marginBottom: 5}}>
-        {status && <>
-            <Stack direction="row" spacing={0.5}>
-                <ModelTrainingIcon fontSize="large" color="primary"/>
-                <Typography variant="h6" component="h6" color="primary">
-                    {text}
-                </Typography>
-            </Stack>
-            <LinearProgress/>
+    return (
+        <Fragment>
+            {status && <>
+            <div className="flex w-full max-w-xs flex-col gap-4 [--radius:1rem]">
+                <Item variant="muted">
+                    <ItemMedia>
+                        <Spinner />
+                    </ItemMedia>
+                    <ItemContent>
+                        <ItemTitle className="line-clamp-1">Training model...</ItemTitle>
+                    </ItemContent>
+                    <ItemContent className="flex-none justify-end">
+                        <span className="text-sm tabular-nums">in progress</span>
+                    </ItemContent>
+                </Item>
+            </div>
         </>}
-    </Box>);
+    </Fragment>);
 }
