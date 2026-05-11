@@ -9,8 +9,7 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      // "rounded-xl border bg-card text-card-foreground shadow",
-        "rounded-xl border bg-card text-card-foreground",
+      "rounded-xl border bg-card text-card-foreground shadow",
       className
     )}
     {...props}
@@ -72,6 +71,19 @@ const CardFooter = React.forwardRef<
     {...props}
   />
 ))
+
+const CardAction = React.forwardRef<
+    HTMLDivElement,
+    React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+    <div
+        ref={ref}
+        className={cn("absolute right-4 top-4", className)}
+        {...props}
+    />
+))
+CardAction.displayName = "CardAction"
+
 CardFooter.displayName = "CardFooter"
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, CardAction }
