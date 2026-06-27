@@ -21,14 +21,11 @@ import {
     ChartContainer,
     ChartLegend,
     ChartLegendContent,
-    ChartTooltip,
     ChartTooltipContent,
     type ChartConfig,
 } from "@/components/ui/chart"
 import {Fragment, useRef, useState} from "react";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.tsx";
-import * as React from "react";
-
 
 const blueColor = '#414ba8'
 const yellowColor = '#ffb422'
@@ -53,9 +50,8 @@ const PredictChart = ({data}) => {
     const [activeIndex, setActiveIndex] = useState(null);
     const [startValue, setStartValue] = useState<number | undefined>(undefined);
     const [endValue, setEndValue] = useState<number | undefined>(undefined);
-    const [isDark, setIsDark] = useState(true); // TODO: need switch by theme
+    // const [isDark, setIsDark] = useState(true); // TODO: need switch by theme
     const ref = useRef({isFirstClick: false});
-
 
     const CustomDot = (props: any) => {
         const {cx, cy, payload, index, dataKey, r = 1} = props;
@@ -76,7 +72,6 @@ const PredictChart = ({data}) => {
             />
         );
     };
-
 
     const handleMouseDown = (e: MouseHandlerDataParam) => {
         const val = Number(e.activeLabel);
@@ -119,7 +114,7 @@ const PredictChart = ({data}) => {
                     </CardHeader>
                     <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
                         <ChartContainer config={chartConfig}
-                            className="aspect-auto h-[250px] w-full">
+                                        className="aspect-auto h-[250px] w-full">
                             <AreaChart data={data}
                                        onMouseDown={handleMouseDown}
                                        onMouseMove={handleMouseMove}>
@@ -137,21 +132,26 @@ const PredictChart = ({data}) => {
                                         <stop offset="99%" stopColor={redColor} stopOpacity={0.03}/>
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid horizontal={true} vertical={false} strokeDasharray="3 3"
-                                               stroke={isDark ? '#475569' : '#e2e8f0'}/>
-                                <XAxis dataKey='month' stroke={isDark ? '#94a3b8' : '#64748b'}/>
-                                <YAxis label={{
-                                    value: 'Temperature (°C)', angle: -90, position: 'insideLeft',
-                                    style: {textAnchor: 'middle', fill: 'white', fontSize: 14}
-                                }}
-                                       type="number" domain={[13, 30]} stroke={isDark ? '#94a3b8' : '#64748b'}
+                                <CartesianGrid horizontal={true} vertical={false}
+                                               strokeDasharray="3 3"
                                 />
+                                <XAxis dataKey='month'
+                                       tickLine={false}
+                                       axisLine={false}
+                                       tickMargin={8}
+                                       minTickGap={32}
+                                />
+                                {/*<YAxis label={{*/}
+                                {/*    value: 'Temperature (°C)', angle: -90, position: 'insideLeft',*/}
+                                {/*    // style: {textAnchor: 'middle', fill: 'white', fontSize: 14}*/}
+                                {/*}}*/}
+                                {/*       type="number" domain={[13, 30]} stroke={isDark ? '#94a3b8' : '#64748b'}*/}
+                                {/*/>*/}
                                 <Tooltip
                                     contentStyle={{
-                                        backgroundColor: isDark ? '#1e293b' : '#f8fafc',
+                                        backgroundColor:  '#1e293b',
                                         border: 'none',
                                         borderRadius: '8px',
-                                        color: isDark ? '#fff' : '#0f172a'
                                     }}
                                 />
                                 <Legend style={{marginTop: 5}}/>
@@ -193,15 +193,13 @@ const PredictChart = ({data}) => {
 
                             </AreaChart>
                         </ChartContainer>
-                        <CardHeader className="flex items-center space-y-0 border-b py-5 sm:flex-row">
-                            <div className="grid flex-1 gap-1">
-                                <CardTitle>Weather data was provided by Open-Meteo API</CardTitle>
-                                <CardDescription>
-                                     <a href="https://open-meteo.com">https://open-meteo.com</a>
-                                </CardDescription>
-                            </div>
-                        </CardHeader>
                     </CardContent>
+                    <CardHeader className="flex items-center space-y-0 border-t py-5 sm:flex-row">
+                        <div className="grid flex-1 gap-1">
+                            <CardTitle>Weather data was provided by:</CardTitle>
+                            <CardDescription>Open-Meteo API <a href="https://open-meteo.com">https://open-meteo.com</a></CardDescription>
+                        </div>
+                    </CardHeader>
                 </Card>
             </div>
         </Fragment>
@@ -209,4 +207,3 @@ const PredictChart = ({data}) => {
 }
 
 export {PredictChart};
-

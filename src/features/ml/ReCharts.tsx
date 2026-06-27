@@ -1,4 +1,4 @@
-import {useState, useEffect, useContext, useRef} from 'react';
+import {useState, useEffect, useContext, useRef, useLayoutEffect} from 'react';
 import {
     LineChart,
     Line,
@@ -19,6 +19,12 @@ import {MemoizedModels} from "./Models.tsx";
 import {RechartWithArea} from "./RechartWithArea.tsx";
 import {TrainingsContext} from '../../context.ts'
 import Progress from "../../Progress.tsx";
+import {ECharts} from "@/features/ml/Echarts.tsx";
+import {ChartAreaInteractive} from '@/features/ml/ShadCnCharts.tsx'
+import {Chart} from "@/features/ml/Chart.tsx";
+import {SectionCards} from './Cards.tsx';
+import {CardsFlex} from "@/features/ml/CardsFlex.tsx";
+import {PredictChart} from "@/features/ml/PredictChart.tsx";
 
 const blueColor = '#414ba8'
 const yellowColor = '#ffb422'
@@ -118,135 +124,292 @@ export default function ReCharts() {
         // <div className={`min-h-screen p-8 transition-colors`}>
         //     <div className="max-w-6xl mx-auto space-y-8">
         //         <div className={`rounded-xl shadow-lg p-6`} ref={ref}>
-                    <div ref={ref}>
-                    <MemoizedModels trainingPeriod={trainingPeriod}
-                                    onReset={onResetHandler}
-                                    onTrainingDone={async () => {
-                                        await getData()
+        <div style={{width:'100%'}}
+             className="grid grid-cols-${cols} gap-3 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card"
+        >
+            <CardsFlex cols={1} >
+                <MemoizedModels trainingPeriod={trainingPeriod}
+                                onReset={onResetHandler}
+                                onTrainingDone={async () => {
+                                    await getData()
+                                }}/>
+            </CardsFlex>
+            <CardsFlex cols={1}>
 
-                                    }}/>
-                    <Progress/>
-                    <ResponsiveContainer width="100%" height={300}>
-                        <AreaChart data={data}
-                                   onMouseDown={handleMouseDown}
-                                   onMouseMove={handleMouseMove}
-                        >
-                            <defs>
-                                <linearGradient id="colorA" x1="0" y1="0" x2="1" y2="1">
-                                    <stop offset="5%" stopColor={greenColor} stopOpacity={0.2}/>
-                                    <stop offset="99%" stopColor={greenColor} stopOpacity={0.001}/>
-                                </linearGradient>
-                                <linearGradient id="colorB" x1="1" y1="0" x2="0" y2="0">
-                                    <stop offset="5%" stopColor={yellowColor} stopOpacity={0.2}/>
-                                    <stop offset="99%" stopColor={yellowColor} stopOpacity={0.001}/>
-                                </linearGradient>
-                                <linearGradient id="colorC" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor={redColor} stopOpacity={0.8}/>
-                                    <stop offset="99%" stopColor={redColor} stopOpacity={0.03}/>
-                                </linearGradient>
-                            </defs>
-                            <CartesianGrid horizontal={true} vertical={false} strokeDasharray="3 3"
-                                           stroke={isDark ? '#475569' : '#e2e8f0'}/>
-                            <XAxis dataKey='month' stroke={isDark ? '#94a3b8' : '#64748b'}/>
-                            <YAxis label={{
-                                value: 'Temperature (°C)', angle: -90, position: 'insideLeft',
-                                style: {textAnchor: 'middle', fill: 'white', fontSize: 14}
-                            }}
-                                   type="number" domain={[13, 30]} stroke={isDark ? '#94a3b8' : '#64748b'}
-                            />
-                            <Tooltip
-                                contentStyle={{
-                                    backgroundColor: isDark ? '#1e293b' : '#f8fafc',
-                                    border: 'none',
-                                    borderRadius: '8px',
-                                    color: isDark ? '#fff' : '#0f172a'
-                                }}
-                            />
-                            <Legend style={{marginTop: 5}}/>
-                            <Area dataKey="temp"
-                                  type='natural'
-                                  stroke={greenColor}
-                                  strokeWidth={2}
-                                  fillOpacity={0.8}
-                                  fill="url(#colorA)"
-                                  name="temperature"
-                                  dot={<CustomDot r={3} fill={greenColor}/>}
-                            />
-                            <Area dataKey="predict"
-                                  type="natural"
-                                  stroke={yellowColor}
-                                  strokeWidth={2}
-                                  fillOpacity={1}
-                                  fill="url(#colorB)"
-                                  name="predict"
-                                  dot={<CustomDot fill={yellowColor}/>}
-                            />
-                            <Line dataKey="train"
-                                  type="natural"
-                                  stroke={redColor}
-                                  strokeWidth={activeIndex !== null ? 3 : 3}
-                                  name="train"
-                                // dot={false}
-                                  dot={<CustomDot fill={redColor}/>}
-                                // dot={{ fill: '#3b82f6', r: 1.5 }}
-                                // activeDot={{ r: 8, fill: '#2563eb' }}
-                            />
-                            <ReferenceArea
-                                x1={startValue}
-                                x2={endValue}
-                                fill={yellowColor}
-                                fillOpacity={0.3}
-                                strokeOpacity={0.8}
-                            />
+                {/*<ChartAreaInteractive trainings={trainings}/>*/}
+                {/*<Chart trainings={trainings} />*/}
 
-                        </AreaChart>
+                <Progress/>
+                <PredictChart data={data}/>
 
-                    </ResponsiveContainer>
-                    <div style={{display: 'flex', justifyContent: 'center', color: 'gray'}}>
-                        <span>Weather data was provided by Open-Meteo API https://open-meteo.com/</span>
-                    </div>
+                {/*<ResponsiveContainer width="100%" height={300}>*/}
+                {/*    <AreaChart data={data}*/}
+                {/*               onMouseDown={handleMouseDown}*/}
+                {/*               onMouseMove={handleMouseMove}*/}
+                {/*    >*/}
+                {/*        <defs>*/}
+                {/*            <linearGradient id="colorA" x1="0" y1="0" x2="1" y2="1">*/}
+                {/*                <stop offset="5%" stopColor={greenColor} stopOpacity={0.2}/>*/}
+                {/*                <stop offset="99%" stopColor={greenColor} stopOpacity={0.001}/>*/}
+                {/*            </linearGradient>*/}
+                {/*            <linearGradient id="colorB" x1="1" y1="0" x2="0" y2="0">*/}
+                {/*                <stop offset="5%" stopColor={yellowColor} stopOpacity={0.2}/>*/}
+                {/*                <stop offset="99%" stopColor={yellowColor} stopOpacity={0.001}/>*/}
+                {/*            </linearGradient>*/}
+                {/*            <linearGradient id="colorC" x1="0" y1="0" x2="0" y2="1">*/}
+                {/*                <stop offset="5%" stopColor={redColor} stopOpacity={0.8}/>*/}
+                {/*                <stop offset="99%" stopColor={redColor} stopOpacity={0.03}/>*/}
+                {/*            </linearGradient>*/}
+                {/*        </defs>*/}
+                {/*        <CartesianGrid horizontal={true} vertical={false} strokeDasharray="3 3"*/}
+                {/*                       stroke={isDark ? '#475569' : '#e2e8f0'}/>*/}
+                {/*        <XAxis dataKey='month' stroke={isDark ? '#94a3b8' : '#64748b'}/>*/}
+                {/*        <YAxis label={{*/}
+                {/*            value: 'Temperature (°C)', angle: -90, position: 'insideLeft',*/}
+                {/*            style: {textAnchor: 'middle', fill: 'white', fontSize: 14}*/}
+                {/*        }}*/}
+                {/*               type="number" domain={[13, 30]} stroke={isDark ? '#94a3b8' : '#64748b'}*/}
+                {/*        />*/}
+                {/*        <Tooltip*/}
+                {/*            contentStyle={{*/}
+                {/*                backgroundColor: isDark ? '#1e293b' : '#f8fafc',*/}
+                {/*                border: 'none',*/}
+                {/*                borderRadius: '8px',*/}
+                {/*                color: isDark ? '#fff' : '#0f172a'*/}
+                {/*            }}*/}
+                {/*        />*/}
+                {/*        <Legend style={{marginTop: 5}}/>*/}
+                {/*        <Area dataKey="temp"*/}
+                {/*              type='natural'*/}
+                {/*              stroke={greenColor}*/}
+                {/*              strokeWidth={2}*/}
+                {/*              fillOpacity={0.8}*/}
+                {/*              fill="url(#colorA)"*/}
+                {/*              name="temperature"*/}
+                {/*              dot={<CustomDot r={3} fill={greenColor}/>}*/}
+                {/*        />*/}
+                {/*        <Area dataKey="predict"*/}
+                {/*              type="natural"*/}
+                {/*              stroke={yellowColor}*/}
+                {/*              strokeWidth={2}*/}
+                {/*              fillOpacity={1}*/}
+                {/*              fill="url(#colorB)"*/}
+                {/*              name="predict"*/}
+                {/*              dot={<CustomDot fill={yellowColor}/>}*/}
+                {/*        />*/}
+                {/*        <Line dataKey="train"*/}
+                {/*              type="natural"*/}
+                {/*              stroke={redColor}*/}
+                {/*              strokeWidth={activeIndex !== null ? 3 : 3}*/}
+                {/*              name="train"*/}
+                {/*            // dot={false}*/}
+                {/*              dot={<CustomDot fill={redColor}/>}*/}
+                {/*            // dot={{ fill: '#3b82f6', r: 1.5 }}*/}
+                {/*            // activeDot={{ r: 8, fill: '#2563eb' }}*/}
+                {/*        />*/}
+                {/*        <ReferenceArea*/}
+                {/*            x1={startValue}*/}
+                {/*            x2={endValue}*/}
+                {/*            fill={yellowColor}*/}
+                {/*            fillOpacity={0.3}*/}
+                {/*            strokeOpacity={0.8}*/}
+                {/*        />*/}
 
-                    <h3 className={`text-2xl font-semibold mb-4 ${isDark ? 'text-white' : 'text-slate-800'}`}>
-                        Trainings
-                    </h3>
-                    <ResponsiveContainer width="100%" height={300}>
-                        <AreaChart data={trainings}>
-                            <CartesianGrid horizontal={true} vertical={false} strokeDasharray="3 3"
-                                           stroke={isDark ? '#475569' : '#e2e8f0'}/>
-                            <XAxis
-                                label={{
-                                    value: 'Epoch', position: 'insideBottom', offset: -2,
-                                    style: {textAnchor: 'middle', fill: 'white', fontSize: 14}
-                                }}
-                                dataKey='epoch' stroke={isDark ? '#94a3b8' : '#64748b'}/>
-                            <YAxis
-                                label={{
-                                    value: 'Loss', angle: -90, position: 'insideLeft',
-                                    style: {textAnchor: 'middle', fill: 'white', fontSize: 14}
-                                }}
-                                type="number" domain={[-50, 500]}
-                                stroke={isDark ? '#94a3b8' : '#64748b'}/>
-                            <Tooltip
-                                contentStyle={{
-                                    backgroundColor: isDark ? '#1e293b' : '#f8fafc',
-                                    border: 'none',
-                                    borderRadius: '8px',
-                                    color: isDark ? '#fff' : '#0f172a'
-                                }}
-                            />
-                            {/*<Legend/>*/}
-                            <Area dataKey="loss"
-                                  type="natural"
-                                  stroke={yellowColor}
-                                  strokeWidth={2}
-                                  fillOpacity={1}
-                                  fill="url(#colorB)"
-                                  name="training"
-                                  dot={<CustomDot fill={yellowColor}/>}
-                            />
-                        </AreaChart>
-                    </ResponsiveContainer>
-                </div>
+                {/*    </AreaChart>*/}
+
+                {/*</ResponsiveContainer>*/}
+                {/*<div style={{display: 'flex', justifyContent: 'center', color: 'gray'}}>*/}
+                {/*    <span>Weather data was provided by Open-Meteo API https://open-meteo.com/</span>*/}
+                {/*</div>*/}
+
+                {/*<h3 className={`text-2xl font-semibold mb-4 ${isDark ? 'text-white' : 'text-slate-800'}`}>*/}
+                {/*    Trainings*/}
+                {/*</h3>*/}
+                {/*<ResponsiveContainer width="100%" height={300}>*/}
+                {/*    <AreaChart data={trainings}>*/}
+                {/*        <CartesianGrid horizontal={true} vertical={false} strokeDasharray="3 3"*/}
+                {/*                       stroke={isDark ? '#475569' : '#e2e8f0'}/>*/}
+                {/*        <XAxis*/}
+                {/*            label={{*/}
+                {/*                value: 'Epoch', position: 'insideBottom', offset: -2,*/}
+                {/*                style: {textAnchor: 'middle', fill: 'white', fontSize: 14}*/}
+                {/*            }}*/}
+                {/*            dataKey='epoch' stroke={isDark ? '#94a3b8' : '#64748b'}/>*/}
+                {/*        <YAxis*/}
+                {/*            label={{*/}
+                {/*                value: 'Loss', angle: -90, position: 'insideLeft',*/}
+                {/*                style: {textAnchor: 'middle', fill: 'white', fontSize: 14}*/}
+                {/*            }}*/}
+                {/*            type="number" domain={[-50, 500]}*/}
+                {/*            stroke={isDark ? '#94a3b8' : '#64748b'}/>*/}
+                {/*        <Tooltip*/}
+                {/*            contentStyle={{*/}
+                {/*                backgroundColor: isDark ? '#1e293b' : '#f8fafc',*/}
+                {/*                border: 'none',*/}
+                {/*                borderRadius: '8px',*/}
+                {/*                color: isDark ? '#fff' : '#0f172a'*/}
+                {/*            }}*/}
+                {/*        />*/}
+                {/*        /!*<Legend/>*!/*/}
+                {/*        <Area dataKey="loss"*/}
+                {/*              type="natural"*/}
+                {/*              stroke={yellowColor}*/}
+                {/*              strokeWidth={2}*/}
+                {/*              fillOpacity={1}*/}
+                {/*              fill="url(#colorB)"*/}
+                {/*              name="training"*/}
+                {/*              dot={<CustomDot fill={yellowColor}/>}*/}
+                {/*        />*/}
+                {/*    </AreaChart>*/}
+                {/*</ResponsiveContainer>*/}
+            </CardsFlex>
+            <CardsFlex cols={2}>
+                {/*<MemoizedModels trainingPeriod={trainingPeriod}*/}
+                {/*                onReset={onResetHandler}*/}
+                {/*                onTrainingDone={async () => {*/}
+                {/*                    await getData()*/}
+
+                {/*                }}/>*/}
+
+                {/*<button onClick={()=>console.log("trainings", trainings)}> TTT trainings</button>*/}
+
+                {/*<ECharts mainRef={ref} />*/}
+
+                {/*<div>123</div>*/}
+
+                <ChartAreaInteractive trainings={trainings}/>
+                <ChartAreaInteractive trainings={trainings}/>
+
+                {/*<Chart trainings={trainings} />*/}
+
+                {/*<Progress/>*/}
+                {/*<SectionCards />*/}
+
+                {/*<ResponsiveContainer width="100%" height={300}>*/}
+                {/*<div>123123</div>*/}
+                {/*    <AreaChart data={data}*/}
+                {/*               onMouseDown={handleMouseDown}*/}
+                {/*               onMouseMove={handleMouseMove}*/}
+                {/*    >*/}
+                {/*        <defs>*/}
+                {/*            <linearGradient id="colorA" x1="0" y1="0" x2="1" y2="1">*/}
+                {/*                <stop offset="5%" stopColor={greenColor} stopOpacity={0.2}/>*/}
+                {/*                <stop offset="99%" stopColor={greenColor} stopOpacity={0.001}/>*/}
+                {/*            </linearGradient>*/}
+                {/*            <linearGradient id="colorB" x1="1" y1="0" x2="0" y2="0">*/}
+                {/*                <stop offset="5%" stopColor={yellowColor} stopOpacity={0.2}/>*/}
+                {/*                <stop offset="99%" stopColor={yellowColor} stopOpacity={0.001}/>*/}
+                {/*            </linearGradient>*/}
+                {/*            <linearGradient id="colorC" x1="0" y1="0" x2="0" y2="1">*/}
+                {/*                <stop offset="5%" stopColor={redColor} stopOpacity={0.8}/>*/}
+                {/*                <stop offset="99%" stopColor={redColor} stopOpacity={0.03}/>*/}
+                {/*            </linearGradient>*/}
+                {/*        </defs>*/}
+                {/*        <CartesianGrid horizontal={true} vertical={false} strokeDasharray="3 3"*/}
+                {/*                       stroke={isDark ? '#475569' : '#e2e8f0'}/>*/}
+                {/*        <XAxis dataKey='month' stroke={isDark ? '#94a3b8' : '#64748b'}/>*/}
+                {/*        <YAxis label={{*/}
+                {/*            value: 'Temperature (°C)', angle: -90, position: 'insideLeft',*/}
+                {/*            style: {textAnchor: 'middle', fill: 'white', fontSize: 14}*/}
+                {/*        }}*/}
+                {/*               type="number" domain={[13, 30]} stroke={isDark ? '#94a3b8' : '#64748b'}*/}
+                {/*        />*/}
+                {/*        <Tooltip*/}
+                {/*            contentStyle={{*/}
+                {/*                backgroundColor: isDark ? '#1e293b' : '#f8fafc',*/}
+                {/*                border: 'none',*/}
+                {/*                borderRadius: '8px',*/}
+                {/*                color: isDark ? '#fff' : '#0f172a'*/}
+                {/*            }}*/}
+                {/*        />*/}
+                {/*        <Legend style={{marginTop: 5}}/>*/}
+                {/*        <Area dataKey="temp"*/}
+                {/*              type='natural'*/}
+                {/*              stroke={greenColor}*/}
+                {/*              strokeWidth={2}*/}
+                {/*              fillOpacity={0.8}*/}
+                {/*              fill="url(#colorA)"*/}
+                {/*              name="temperature"*/}
+                {/*              dot={<CustomDot r={3} fill={greenColor}/>}*/}
+                {/*        />*/}
+                {/*        <Area dataKey="predict"*/}
+                {/*              type="natural"*/}
+                {/*              stroke={yellowColor}*/}
+                {/*              strokeWidth={2}*/}
+                {/*              fillOpacity={1}*/}
+                {/*              fill="url(#colorB)"*/}
+                {/*              name="predict"*/}
+                {/*              dot={<CustomDot fill={yellowColor}/>}*/}
+                {/*        />*/}
+                {/*        <Line dataKey="train"*/}
+                {/*              type="natural"*/}
+                {/*              stroke={redColor}*/}
+                {/*              strokeWidth={activeIndex !== null ? 3 : 3}*/}
+                {/*              name="train"*/}
+                {/*            // dot={false}*/}
+                {/*              dot={<CustomDot fill={redColor}/>}*/}
+                {/*            // dot={{ fill: '#3b82f6', r: 1.5 }}*/}
+                {/*            // activeDot={{ r: 8, fill: '#2563eb' }}*/}
+                {/*        />*/}
+                {/*        <ReferenceArea*/}
+                {/*            x1={startValue}*/}
+                {/*            x2={endValue}*/}
+                {/*            fill={yellowColor}*/}
+                {/*            fillOpacity={0.3}*/}
+                {/*            strokeOpacity={0.8}*/}
+                {/*        />*/}
+
+                {/*    </AreaChart>*/}
+
+                {/*</ResponsiveContainer>*/}
+                {/*<div style={{display: 'flex', justifyContent: 'center', color: 'gray'}}>*/}
+                {/*    <span>Weather data was provided by Open-Meteo API https://open-meteo.com/</span>*/}
+                {/*</div>*/}
+
+                {/*<h3 className={`text-2xl font-semibold mb-4 ${isDark ? 'text-white' : 'text-slate-800'}`}>*/}
+                {/*    Trainings*/}
+                {/*</h3>*/}
+                {/*<ResponsiveContainer width="100%" height={300}>*/}
+                {/*    <AreaChart data={trainings}>*/}
+                {/*        <CartesianGrid horizontal={true} vertical={false} strokeDasharray="3 3"*/}
+                {/*                       stroke={isDark ? '#475569' : '#e2e8f0'}/>*/}
+                {/*        <XAxis*/}
+                {/*            label={{*/}
+                {/*                value: 'Epoch', position: 'insideBottom', offset: -2,*/}
+                {/*                style: {textAnchor: 'middle', fill: 'white', fontSize: 14}*/}
+                {/*            }}*/}
+                {/*            dataKey='epoch' stroke={isDark ? '#94a3b8' : '#64748b'}/>*/}
+                {/*        <YAxis*/}
+                {/*            label={{*/}
+                {/*                value: 'Loss', angle: -90, position: 'insideLeft',*/}
+                {/*                style: {textAnchor: 'middle', fill: 'white', fontSize: 14}*/}
+                {/*            }}*/}
+                {/*            type="number" domain={[-50, 500]}*/}
+                {/*            stroke={isDark ? '#94a3b8' : '#64748b'}/>*/}
+                {/*        <Tooltip*/}
+                {/*            contentStyle={{*/}
+                {/*                backgroundColor: isDark ? '#1e293b' : '#f8fafc',*/}
+                {/*                border: 'none',*/}
+                {/*                borderRadius: '8px',*/}
+                {/*                color: isDark ? '#fff' : '#0f172a'*/}
+                {/*            }}*/}
+                {/*        />*/}
+                {/*        /!*<Legend/>*!/*/}
+                {/*        <Area dataKey="loss"*/}
+                {/*              type="natural"*/}
+                {/*              stroke={yellowColor}*/}
+                {/*              strokeWidth={2}*/}
+                {/*              fillOpacity={1}*/}
+                {/*              fill="url(#colorB)"*/}
+                {/*              name="training"*/}
+                {/*              dot={<CustomDot fill={yellowColor}/>}*/}
+                {/*        />*/}
+                {/*    </AreaChart>*/}
+                {/*</ResponsiveContainer>*/}
+            </CardsFlex>
+            <SectionCards />
+        </div>
+
             // </div>
         // </div>
 

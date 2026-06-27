@@ -20,7 +20,7 @@ export default function Progress() {
                     <ItemMedia>
                         <Spinner />
                     </ItemMedia>
-                    <ItemContent>
+                    <ItemContent>фывфывфывфывфы
                         <ItemTitle className="line-clamp-1">Training model...</ItemTitle>
                     </ItemContent>
                     <ItemContent className="flex-none justify-end">
