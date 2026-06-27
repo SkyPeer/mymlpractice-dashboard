@@ -4,18 +4,6 @@ import {TanStackRouterDevtools} from '@tanstack/react-router-devtools'
 
 const RootLayout = () => (
     <Fragment>
-        <div className="p-2 flex gap-2">
-            <Link to="/" className="[&.active]:font-bold">
-                Home
-            </Link>{' '}
-            <Link to="/about" className="[&.active]:font-bold">
-                About
-            </Link>
-            <Link to="/ml" className="[&.active]:font-bold">
-                ML
-            </Link>
-        </div>
-        <hr/>
         <Outlet/>
         <TanStackRouterDevtools/>
     </Fragment>

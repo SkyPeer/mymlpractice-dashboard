@@ -106,9 +106,9 @@ const PredictChart = ({data}) => {
                 <Card className="pt-0">
                     <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
                         <div className="grid flex-1 gap-1">
-                            <CardTitle>Area Chart - Interactive</CardTitle>
+                            <CardTitle>Temperature Forecast</CardTitle>
                             <CardDescription>
-                                Showing total visitors for the last 3 months
+                                Actual vs predicted temperature — click to select training range
                             </CardDescription>
                         </div>
                     </CardHeader>
