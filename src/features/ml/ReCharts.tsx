@@ -125,7 +125,7 @@ export default function ReCharts() {
         //     <div className="max-w-6xl mx-auto space-y-8">
         //         <div className={`rounded-xl shadow-lg p-6`} ref={ref}>
         <div style={{width:'100%'}}
-             className="grid grid-cols-${cols} gap-3 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card"
+             className="grid grid-cols-${cols} gap-4 px-4 py-4 *:data-[slot=card]:shadow-md lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4"
         >
             <CardsFlex cols={1} >
                 <MemoizedModels trainingPeriod={trainingPeriod}
