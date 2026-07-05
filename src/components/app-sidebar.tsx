@@ -32,6 +32,10 @@ const data = {
                     title: "Overview",
                     url: "/",
                 },
+                {
+                    title: "Windy Generator",
+                    url: "/windy",
+                },
             ],
         },
         {
