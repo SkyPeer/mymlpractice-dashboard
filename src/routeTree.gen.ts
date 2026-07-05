@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WindyRouteImport } from './routes/windy'
 import { Route as MlRouteImport } from './routes/ml'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
+const WindyRoute = WindyRouteImport.update({
+  id: '/windy',
+  path: '/windy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MlRoute = MlRouteImport.update({
   id: '/ml',
   path: '/ml',
@@ -33,34 +39,45 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/ml': typeof MlRoute
+  '/windy': typeof WindyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/ml': typeof MlRoute
+  '/windy': typeof WindyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/ml': typeof MlRoute
+  '/windy': typeof WindyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/ml'
+  fullPaths: '/' | '/about' | '/ml' | '/windy'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/ml'
-  id: '__root__' | '/' | '/about' | '/ml'
+  to: '/' | '/about' | '/ml' | '/windy'
+  id: '__root__' | '/' | '/about' | '/ml' | '/windy'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   MlRoute: typeof MlRoute
+  WindyRoute: typeof WindyRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/windy': {
+      id: '/windy'
+      path: '/windy'
+      fullPath: '/windy'
+      preLoaderRoute: typeof WindyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/ml': {
       id: '/ml'
       path: '/ml'
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   MlRoute: MlRoute,
+  WindyRoute: WindyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

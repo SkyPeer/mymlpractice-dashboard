@@ -141,11 +141,6 @@ const Models = (props) => {
 
 
             <Card>
-                {/*<CardHeader>*/}
-                {/*<CardTitle>Model Setting</CardTitle>*/}
-                {/*<CardDescription>Card Description</CardDescription>*/}
-                {/*<CardAction>Card Action</CardAction>*/}
-                {/*</CardHeader>*/}
                 <CardContent className="pb-5 pt-5">
                     <div className="grid auto-rows-min gap-4 md:grid-cols-3">
                         <Select onValueChange={(value) => onSelectModelHandler(value)}>
